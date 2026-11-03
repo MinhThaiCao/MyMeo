@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#172554"><meta name="description" content="Personal Work Manager">
+  <link rel="manifest" href="manifest.webmanifest"><link rel="stylesheet" href="styles.css">
+  <title>WorkSpace — Quản lý cá nhân</title>
+</head>
+<body>
+<div id="authView" class="auth-wrap">
+  <div class="auth-card">
+    <div class="brand-mark">W</div><p class="eyebrow">PERSONAL MANAGEMENT SYSTEM</p>
+    <h1>WorkSpace</h1><p class="muted">Quản lý ca làm việc, nhân sự và vật tư trong một nơi.</p>
+    <div class="tabs"><button class="tab active" data-auth="login">Đăng nhập</button><button class="tab" data-auth="signup">Tạo tài khoản</button></div>
+    <form id="authForm">
+      <label>Email<input id="email" type="email" required placeholder="ban@email.com"></label>
+      <label>Mật khẩu<input id="password" type="password" required minlength="6" placeholder="Tối thiểu 6 ký tự"></label>
+      <button class="btn primary wide" id="authSubmit">Đăng nhập</button>
+    </form>
+    <p class="hint" id="authHint">Cần cấu hình Supabase trước khi sử dụng.</p>
+    <p class="error" id="authError"></p>
+  </div>
+</div>
+<div id="appView" class="app hidden">
+  <aside class="sidebar">
+    <div class="brand"><div class="brand-mark small">W</div><div><b>WorkSpace</b><small>PERSONAL MANAGER</small></div></div>
+    <div class="workspace-label">KHÔNG GIAN LÀM VIỆC</div>
+    <nav id="nav">
+      <button class="nav-item active" data-page="dashboard"><span>▦</span>Tổng quan</button>
+      <button class="nav-item" data-page="shifts"><span>▣</span>Lịch & ca làm</button>
+      <button class="nav-item" data-page="employees"><span>♙</span>Nhân sự</button>
+      <button class="nav-item" data-page="materials"><span>▤</span>Vật tư</button>
+      <button class="nav-item" data-page="movements"><span>⇄</span>Nhập / xuất kho</button>
+      <button class="nav-item" data-page="reports"><span>▥</span>Báo cáo</button>
+      <button class="nav-item" data-page="settings"><span>⚙</span>Cài đặt & sao lưu</button>
+    </nav>
+    <div class="sidebar-bottom"><span class="online-dot"></span><span id="connectionLabel">Chưa kết nối</span><button id="logoutBtn" class="logout">Đăng xuất ↗</button></div>
+  </aside>
+  <main class="main">
+    <header class="topbar"><button id="menuBtn" class="icon-btn mobile-only">☰</button><div><p class="eyebrow" id="crumb">WORKSPACE / TỔNG QUAN</p><h2 id="pageTitle">Tổng quan</h2></div><div class="user-chip"><div class="avatar">U</div><div><b id="userEmail">Tài khoản</b><small>Cá nhân</small></div></div></header>
+    <section id="pageContent" class="content"></section>
+  </main>
+</div>
+<div id="modal" class="modal hidden"><div class="modal-card"><div class="modal-head"><h3 id="modalTitle">Thêm mới</h3><button id="modalClose" class="icon-btn">×</button></div><form id="dataForm"><div id="formFields" class="form-grid"></div><div class="modal-actions"><button type="button" class="btn ghost" id="cancelModal">Hủy</button><button class="btn primary" type="submit">Lưu thông tin</button></div></form></div></div>
+<div id="toast" class="toast"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="app.js"></script>
+</body></html>
