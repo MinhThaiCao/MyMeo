@@ -1,7 +1,8 @@
 {
-  "name": "WorkSpace Personal Manager",
-  "short_name": "WorkSpace",
+  "name": "MyMeo - Personal Manager",
+  "short_name": "MyMeo",
   "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#f5f7fb",
   "theme_color": "#172554",

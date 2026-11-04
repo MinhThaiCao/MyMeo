@@ -1,47 +1,46 @@
-# WorkSpace — Personal Work Manager
+# MyMeo — Personal Manager v2
 
-Ứng dụng PWA quản lý cá nhân: ca làm việc, nhân sự, vật tư, nhập/xuất kho, báo cáo và sao lưu.
+Ứng dụng web/PWA quản lý công việc, lịch phân công nhiều nhân sự, nhân sự, vật tư và nhập/xuất kho. Frontend tĩnh; Supabase Auth + PostgreSQL là backend.
 
-## 1. Công nghệ & chi phí
-- Frontend: HTML/CSS/JavaScript, có thể host tĩnh.
-- Backend: Supabase (Auth + PostgreSQL + Row Level Security).
-- PWA: có thể cài như ứng dụng trên trình duyệt hỗ trợ.
-- Có thể bắt đầu trên các gói miễn phí; hạn mức và điều kiện của nhà cung cấp có thể thay đổi. Không cần mua tên miền riêng nếu dùng URL hosting miễn phí.
+## Tính năng v2
+- Sidebar có nút thu gọn/mở rộng trên desktop; menu trượt và nút đóng trên mobile, chạm nền tối để đóng.
+- Dashboard timeline theo ngày, chia từng giờ từ 00:00–23:00; hiển thị đầu mục, thời gian, trạng thái, ưu tiên và danh sách nhân sự được phân công.
+- Một công việc có thể phân công nhiều nhân sự.
+- Thông báo trong ứng dụng khi nhân sự mới được thêm vào một công việc; có badge chưa đọc và đánh dấu đã đọc.
+- Tự tải lại dữ liệu định kỳ 60 giây; tải dữ liệu song song, giới hạn số bản ghi tải mỗi bảng và debounce tìm kiếm.
+- PWA, giao diện responsive, cache phiên bản mới và ưu tiên lấy phiên bản mới nhất của HTML/CSS/JS.
+- Giữ các phân hệ nhân sự, vật tư, nhập/xuất kho, báo cáo, sao lưu JSON và xuất CSV.
 
-## 2. Thiết lập Supabase
-1. Tạo project tại https://supabase.com/ (chọn gói Free nếu phù hợp).
-2. Mở SQL Editor, chạy toàn bộ nội dung `schema.sql`.
-3. Vào Project Settings → API, sao chép Project URL và anon/public key.
-4. Mở `app.js`, thay hai giá trị trong `CONFIG`:
-   - `SUPABASE_URL`
-   - `SUPABASE_ANON_KEY`
-   Chỉ dùng anon/public key ở frontend. Tuyệt đối không đưa service_role key vào ứng dụng.
-5. Authentication → URL Configuration: sau khi deploy, khai báo Site URL và Redirect URLs phù hợp.
-6. Authentication → Providers → Email: cấu hình xác nhận email theo nhu cầu. Với thử nghiệm, có thể tắt xác nhận email trong project riêng; không nên tắt tùy tiện ở môi trường chia sẻ.
+## Cấu hình Supabase
+Trong `app.js`, cấu hình `SUPABASE_URL` bằng Project URL gốc (không thêm `/rest/v1/`) và `SUPABASE_ANON_KEY` bằng Publishable Key (`sb_publishable_...`). Không bao giờ đưa Secret Key (`sb_secret_...`) vào frontend.
 
-## 3. Chạy thử trên máy tính
-Cần chạy qua HTTP server (không mở trực tiếp file index.html nếu muốn PWA/service worker).
-- Python: `python -m http.server 8080`
-- Mở `http://localhost:8080`
-Hoặc dùng VS Code Live Server.
+## Cập nhật database cho v2
+1. Mở Supabase Dashboard → SQL Editor → New query.
+2. Mở file `migration_v2.sql`, copy toàn bộ nội dung, paste vào SQL Editor và Run.
+3. Migration tạo bảng `shift_assignments`, `notifications`, bổ sung `priority`, `description` cho `shifts`, bật RLS/policies và chuyển các phân công cũ từ `shifts.employee_id` sang bảng liên kết mới.
+4. Kiểm tra Table Editor có `shift_assignments` và `notifications`.
 
-## 4. Đưa lên Internet miễn phí
-Có thể deploy thư mục này lên GitHub Pages hoặc dịch vụ static hosting tương đương. Sau khi deploy, mở URL trên máy tính/điện thoại và chọn Add to Home Screen / Install App. Cần cấu hình lại Supabase Auth URL theo tên miền được cấp.
-GitHub Pages là hosting tĩnh; không chứa database. Dữ liệu vẫn nằm ở Supabase.
+Không cần chạy lại `schema.sql` nếu MyMeo v1 đã được cài đặt.
 
-## 5. Các chức năng hiện có
-- Đăng ký/đăng nhập email + mật khẩu.
-- Tách dữ liệu theo user_id với Row Level Security.
-- CRUD nhân sự, ca làm, vật tư, giao dịch kho.
-- Tìm kiếm bảng; xuất CSV mở được bằng Excel.
-- Dashboard và báo cáo tổng quan.
-- Sao lưu JSON và nhập lại dữ liệu.
-- Giao diện responsive và service worker cơ bản.
+## Đẩy bản v2 lên GitHub Pages
+1. Giải nén ZIP.
+2. Mở repository GitHub `MyMeo` → Add file → Upload files.
+3. Upload các file mới trong thư mục `WorkSpace_Personal_Manager` vào thư mục gốc repository và xác nhận thay thế các file cùng tên: `index.html`, `app.js`, `styles.css`, `sw.js`, `manifest.webmanifest`, `README.md`.
+4. Upload thêm `migration_v2.sql` vào root (hoặc chỉ giữ file này để chạy migration; không bắt buộc app phải tải file SQL).
+5. Commit changes. GitHub Pages sẽ tự triển khai lại.
+6. Mở MyMeo, đăng xuất/đăng nhập lại nếu cần. Nếu trình duyệt giữ giao diện cũ, đóng hẳn tab/app rồi mở lại; service worker v2 sẽ cập nhật cache.
 
-## 6. Lưu ý bản MVP
-- Bản hiện tại là MVP khởi đầu, chưa phải hệ thống ERP hoàn chỉnh.
-- Nhập/xuất kho cập nhật tồn hiện tại ở luồng nhập/xuất mới; chưa có quy trình kiểm kê, duyệt phiếu, khóa sổ hoặc nhật ký điều chỉnh.
-- Cần nâng cấp xử lý tồn kho bằng PostgreSQL transaction/RPC để bảo đảm đồng thời và tránh sai lệch khi nhiều thao tác cùng lúc.
-- Chưa có phân quyền nhiều vai trò trong cùng một workspace; hiện mỗi tài khoản có vùng dữ liệu riêng.
-- Sao lưu JSON là bản sao dữ liệu hiện tại, file cần được giữ an toàn. Không chia sẻ file nếu có thông tin cá nhân.
-- Dữ liệu trên thiết bị không được đảm bảo hoạt động ngoại tuyến đầy đủ; đồng bộ cần Internet.
+## Kiểm thử
+- Desktop: nút ‹ cạnh logo thu gọn sidebar; nút › mở rộng.
+- Mobile: nút ☰ mở menu; nút × hoặc chạm vùng nền tối để đóng.
+- Dashboard: đổi ngày bằng ô ngày hoặc nút ‹ / ›; công việc hiển thị đúng giờ và nhân sự.
+- Công việc & lịch: Tạo công việc, chọn nhiều nhân sự, ngày, giờ, ưu tiên, trạng thái; lưu và kiểm tra trên Dashboard.
+- Chuông thông báo: kiểm tra thông báo mới được tạo khi bổ sung nhân sự vào công việc.
+
+## Giới hạn hiện tại của thông báo
+Thông báo v2 là thông báo bên trong tài khoản quản lý MyMeo. Hồ sơ nhân sự hiện chưa có tài khoản đăng nhập riêng, vì vậy chưa thể gửi thông báo trực tiếp tới điện thoại/tài khoản cá nhân của từng nhân sự. Muốn có thông báo đẩy/email cho từng người, cần bổ sung định danh tài khoản cho nhân sự và tích hợp dịch vụ gửi thông báo (ví dụ email hoặc Web Push).
+
+## Lưu ý
+- Dữ liệu được phân tách theo `user_id` bằng Supabase Row Level Security.
+- Bản v2 kiểm tra và tải dữ liệu định kỳ 60 giây; đây chưa phải đồng bộ realtime tức thời.
+- Bản MVP chưa phải hệ thống quản trị doanh nghiệp production-ready. Nên sao lưu dữ liệu định kỳ.
